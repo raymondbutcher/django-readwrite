@@ -3,7 +3,8 @@ django-readwrite 0.0.1
 
 **This library is not ready for use yet.**
 
-Read/write database splitting for Django, based on the HTTP request method.
+Read/write database splitting for Django,
+based on the HTTP request method or path.
 
 Tested against Django 1.2.x
 
@@ -12,8 +13,8 @@ Features:
   HTTP request according to configured HTTP methods
   (GET, POST, etc) and URL paths.
 * Chooses a random connection if there are multiple
-  databases configured for a request - poor man's
-  database load balancing.
+  databases configured to match the request (poor man's
+  load balancing).
 * Raises an exception if a view tries to write to a
   read-only database.
 * No issues with database replica latency,
@@ -21,9 +22,9 @@ Features:
 * No need to specify a database with `using=`
   in all of your model/transaction code.
 * No need to set up database routers.
-* Database transactions work as expectd;
-  reads won't read from a different transaction
-  to the writes.
+* Transactions work as normal; all statements
+  within a Django transaction use the same database
+  transaction/connection.
 * Read-only command to force all requests to use a
   read-only database connection.
 
@@ -34,14 +35,14 @@ Usage
 -----
 
 1. Add `django_readwrite` to the top of your `INSTALLED_APPS` setting.
-2. Replace TransactionMiddleware in `MIDDLEWARE_CLASSES` with:
+2. Replace `TransactionMiddleware` in `MIDDLEWARE_CLASSES` with:
     * `django_readwrite.middleware.MultiDBMiddleware`
     * `django_readwrite.middleware.ReadOnlyMiddleware`
     * `django_readwrite.middleware.MultiDBTransactionMiddleware`
 3. Update your database settings to include:
-    * HTTP_PATHS
-    * HTTP_METHODS
-    * READ_ONLY or READ_ONLY_WARNING
+    * `HTTP_PATHS`
+    * `HTTP_METHODS`
+    * `READ_ONLY` or `READ_ONLY_WARNING`
 
 Example:
 
