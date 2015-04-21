@@ -14,11 +14,11 @@ Features:
 * Chooses a random connection if there are multiple
   databases configured for a request - poor man's
   database load balancing.
-* Raises an error if a view tries to write to a
+* Raises an exception if a view tries to write to a
   read-only database.
 * No issues with database replica latency,
-  and reading data before it has been synchronized.
-* No need to specify any database with `using=`
+  or reading data before it has been synchronized.
+* No need to specify a database with `using=`
   in all of your model/transaction code.
 * No need to set up database routers.
 * Database transactions work as expectd;
@@ -34,7 +34,7 @@ Usage
 -----
 
 1. Add `django_readwrite` to the top of your `INSTALLED_APPS` setting.
-2. Replaces TransactionMiddleware in `MIDDLEWARE_CLASSES` with:
+2. Replace TransactionMiddleware in `MIDDLEWARE_CLASSES` with:
     * `django_readwrite.middleware.MultiDBMiddleware`
     * `django_readwrite.middleware.ReadOnlyMiddleware`
     * `django_readwrite.middleware.MultiDBTransactionMiddleware`
@@ -55,7 +55,7 @@ Example:
             'PASSWORD': primary_password,
 
             # Set HTTP_PATHS to force request paths to use a database.
-            # This ensures that the admin always uses the primary database.
+            # This ensures that the admin always uses this database.
             'HTTP_PATHS': ['/admin/'],
 
         },
@@ -70,14 +70,14 @@ Example:
             # Set HTTP_METHODS to force request methods to use a database.
             # This ensures that GET and HEAD requests use the read-only replica.
             # Adding None to the list means that it will also be used outside
-            # of requests (e.g. if your application access the database during
+            # of requests (e.g. if your application accesses the database during
             # process initialization).
             'HTTP_METHODS': ('GET', 'HEAD', None),
 
             # Set READ_ONLY to disable write SQL queries on a database.
             'READ_ONLY': True,
 
-            # Enable autocommit avoid creating transactions
+            # Enable autocommit to avoid creating transactions
             # on databases which will never have writes.
             'OPTIONS': {
                 'autocommit': True,
